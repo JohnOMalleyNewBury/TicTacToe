@@ -8,7 +8,7 @@ class Square(object):
         self.content = -1
 
     def setMark(self, newMark):
-        if newMark == "X":
+        if newMark == 'X':
             self.content = 1
         elif newMark == 'O':
             self.content = 2
@@ -55,9 +55,20 @@ class Board(object):
     def getAvailableSquare(self):
         return choice(self.availableList)
 
-    def findBlock(self):
-        self.availableList[self.winningCombinations]
-        self.checkPlayer
+    def findBlock(self, playerMark):
+        if playerMark == 'X':
+            searchMark = 'O'
+        else:
+            searchMark = 'X'
+        for combination in self.winningCombinations:
+            if self.gameBoard.getMark(combination[0]) == searchMark and self.gameBoard.getMark(combination[1]) == searchMark and self.gameBoard.getMark(combination[2]) == '':
+                return combination[2]
+            elif self.gameBoard.getMark(combination[0]) == searchMark and self.gameBoard.getMark(combination[1]) == '' and self.gameBoard.getMark(combination[2]) == searchMark:
+                return combination[1]
+            elif self.gameBoard.getMark(combination[0]) == '' and self.gameBoard.getMark(combination[1]) == searchMark and self.gameBoard.getMark(combination[2]) == searchMark:
+                return combination[0]
+
+
 
     def findWin(self):
         self.availableList[self.winningCombinations]
