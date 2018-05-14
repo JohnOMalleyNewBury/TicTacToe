@@ -3,9 +3,11 @@ __author__ = 'John Omalley'
 
 from gameObjects import Board
 
-testBoard = Board
-testBoard.setmark[0]
-testBoard.setMark[1]
-testBoard.setMark[2]
-testBoard.getMark(0, 1, 2)
+testBoard = Board()
+testBoard.setMark(0, 'X')
+testBoard.setMark(1, 'X')
+testBoard.setMark(2, 'O')
+print(testBoard.getMark(0))
+print(testBoard.getMark(1))
+print(testBoard.getMark(2))
 
