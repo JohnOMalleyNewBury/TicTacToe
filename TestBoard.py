@@ -6,8 +6,10 @@ from gameObjects import Board
 testBoard = Board()
 testBoard.setMark(0, 'X')
 testBoard.setMark(1, 'X')
-testBoard.setMark(2, 'O')
+testBoard.setMark(3, 'O')
 print(testBoard.getMark(0))
 print(testBoard.getMark(1))
 print(testBoard.getMark(2))
+print(testBoard.getMark(3))
 
+print(testBoard.findBlock('O'))

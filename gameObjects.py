@@ -15,10 +15,10 @@ class Square(object):
 
     def getMark(self):
         if self.content == 1:
-            return  'X'
+            return 'X'
         elif self.content == 2:
             return 'O'
-        return None
+        return ''
 
     def isEmpty(self):
         return self.content == -1
@@ -61,11 +61,11 @@ class Board(object):
         else:
             searchMark = 'X'
         for combination in self.winningCombinations:
-            if self.gameBoard.getMark(combination[0]) == searchMark and self.gameBoard.getMark(combination[1]) == searchMark and self.gameBoard.getMark(combination[2]) == '':
+            if self.getMark(combination[0]) == searchMark and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == '':
                 return combination[2]
-            elif self.gameBoard.getMark(combination[0]) == searchMark and self.gameBoard.getMark(combination[1]) == '' and self.gameBoard.getMark(combination[2]) == searchMark:
+            elif self.getMark(combination[0]) == searchMark and self.getMark(combination[1]) == '' and self.getMark(combination[2]) == searchMark:
                 return combination[1]
-            elif self.gameBoard.getMark(combination[0]) == '' and self.gameBoard.getMark(combination[1]) == searchMark and self.gameBoard.getMark(combination[2]) == searchMark:
+            elif self.getMark(combination[0]) == '' and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == searchMark:
                 return combination[0]
 
 
