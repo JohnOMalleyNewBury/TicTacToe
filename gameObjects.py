@@ -68,9 +68,16 @@ class Board(object):
             elif self.getMark(combination[0]) == '' and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == searchMark:
                 return combination[0]
 
+    def findWin(self, searchMark):
+        searchMark = 'X'
+        for combination in self.winningCombinations:
+            if self.getMark(combination[0]) == searchMark and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == '':
+                return combination[2]
+            elif self.getMark(combination[0]) == searchMark and self.getMark(combination[1]) == '' and self.getMark(combination[2]) == searchMark:
+                return combination[1]
+            elif self.getMark(combination[0]) == '' and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == searchMark:
+                return combination[0]
 
 
-    def findWin(self):
-        self.availableList[self.winningCombinations]
-        self.checkPlayer
+
 
