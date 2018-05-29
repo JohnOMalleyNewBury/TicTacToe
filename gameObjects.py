@@ -77,7 +77,11 @@ class Board(object):
                 return combination[1]
             elif self.getMark(combination[0]) == '' and self.getMark(combination[1]) == searchMark and self.getMark(combination[2]) == searchMark:
                 return combination[0]
+        return  None
 
-
-
+    def checForWin(self):
+        for combination in self.winningCombinations:
+            if self.getMark(combination[0]) ==  self.getMark(combination[1]) and self.getMark(combination[1]) == self.getMark(combination[2])and self.getMark(combination[0]) != '':
+                return True
+        return False
 
