@@ -93,6 +93,21 @@ if __name__ == "__main__":
     tictactoeApp.updateUI()
     tictactoeApp.show()
     sys.exit(app.exec_())
+def restarButtonClickedHandler(self, gameInProgress):
+    self.gameInProgress = True
+    self.gameBoard.isEmpty
+
+def logging (self):
+    self.wins.settext
+    self.losses
+    self.gameboard.getmark
+def resultCounter(self,wins,losses):
+    self.wins
+    self.losses
+    if wins +1 :
+        settext.wins
+
+
 
 
 

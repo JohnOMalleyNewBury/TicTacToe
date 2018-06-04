@@ -170,7 +170,7 @@
      <string>Settings</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="winsLabel">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -183,7 +183,7 @@
      <string>Wins</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="lossesLabel">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -196,24 +196,30 @@
      <string>Losses</string>
     </property>
    </widget>
-   <widget class="QLCDNumber" name="lcdNumber">
+   <widget class="QLabel" name="winCount">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>160</y>
-      <width>64</width>
-      <height>23</height>
+      <x>120</x>
+      <y>170</y>
+      <width>55</width>
+      <height>16</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QLCDNumber" name="lcdNumber_2">
+   <widget class="QLabel" name="lossCount">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>170</y>
-      <width>64</width>
-      <height>23</height>
+      <x>630</x>
+      <y>180</y>
+      <width>55</width>
+      <height>16</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>
