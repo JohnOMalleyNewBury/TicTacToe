@@ -16,6 +16,9 @@ from PyQt5 import QtGui, uic
 from PyQt5.QtWidgets import  QMainWindow, QApplication
 from gameObjects import *
 
+logFilenameDefault = 'tictactoe.log'
+pickleFilenameDefault = ".ticTactoeSave.pl"
+
 class TicTacToe(QMainWindow) :
     """A game of Craps."""
 
@@ -29,11 +32,9 @@ class TicTacToe(QMainWindow) :
         self.appSettings = QSettings()
         self.quitCounter = 0
 
-        uic.loadUi("settings.ui", self)
+        self.pickFilename = pickleFilenameDefault
 
-        self.pickFilename = "ticTactoeSave"
-
-        self.restoreSetting()
+        self.restoreSettings()
 
         self.wins = 0
         self.losses = 0
@@ -93,8 +94,10 @@ class TicTacToe(QMainWindow) :
     def __str__( self ):
         """String representation for Dice.
         """
-
         return ""
+
+    def restoreSettings(self):
+        return
 
     def updateUI ( self ):
         self.square0.setText(self.gameBoard.getMark(0))
@@ -163,35 +166,11 @@ class TicTacToe(QMainWindow) :
             self.gameBoard.isEmpty
             self.gameInprogress = True
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    tictactoeApp = TicTacToe()
-    tictactoeApp.updateUI()
-    tictactoeApp.show()
-    sys.exit(app.exec_())
-    QCoreApplication.setOrganizationName("OMALLEY Software");
-    QCoreApplication.setOrganizationDomain("omalleysoftware.com");
-    QCoreApplication.setApplicationName("TicTacToe");
-    appSettings = QSettings()
-    if appSettings.contains('createLogFile'):
-        createLogFile = appSettings.value('createLogFile')
-    else:
-        logFilename = logFilenameDefault
-        appSettings.setValue('logFile', logFilename)
-    if createLogFile:
-        startingFolderName = path.dirname(path.realpath(__file__))
-        if appSettings.contains('logFile'):
-            logFilename = appSettings.value('logFile', type=str)
-        else:
-            logFilename = logFilenameDefault
-            appSettings.setValue('logFile', logFilename)
-        basicConfig(filename=path.join(startingFolderName, logFilename), level=INFO,
-                    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s')
 class PreferencesDialog(QDialog):
     def __init__(self, parent = TicTacToe):
         super(PreferencesDialog, self).__init__()
 
-        uic.loadUi('preferencesDialog.ui', self)
+        uic.loadUi('settings.ui', self)
         self.logger = getLogger("Fireheart.craps")
 
         self.appSettings = QSettings()
@@ -216,11 +195,30 @@ class PreferencesDialog(QDialog):
 
         self.updateUI()
 
-
-
-
-
-
+if __name__ == "__main__":
+    QCoreApplication.setOrganizationName("OMALLEY Software");
+    QCoreApplication.setOrganizationDomain("omalleysoftware.com");
+    QCoreApplication.setApplicationName("TicTacToe");
+    appSettings = QSettings()
+    if appSettings.contains('createLogFile'):
+        createLogFile = appSettings.value('createLogFile')
+    else:
+        logFilename = logFilenameDefault
+        appSettings.setValue('logFile', logFilename)
+    if createLogFile:
+        startingFolderName = path.dirname(path.realpath(__file__))
+        if appSettings.contains('logFile'):
+            logFilename = appSettings.value('logFile', type=str)
+        else:
+            logFilename = logFilenameDefault
+            appSettings.setValue('logFile', logFilename)
+        basicConfig(filename=path.join(startingFolderName, logFilename), level=INFO,
+                    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s')
+    app = QApplication(sys.argv)
+    tictactoeApp = TicTacToe()
+    tictactoeApp.updateUI()
+    tictactoeApp.show()
+    sys.exit(app.exec_())
 
 
 
