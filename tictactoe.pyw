@@ -63,7 +63,6 @@ class TicTacToe(QMainWindow) :
             self.rollingForLabel.setText("")
         else:
             self.rollingForLabel.setText(str("%i" % self.firstRollValue))
-        self.resultsLabel.setText(self.results)
         self.rollButton.setText(self.buttonText)
         self.winsLabel.setText(str("%i" % self.wins))
         self.lossesLabel.setText(str("%i" % self.losses))
