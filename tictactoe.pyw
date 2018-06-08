@@ -18,6 +18,7 @@ from gameObjects import *
 
 logFilenameDefault = 'tictactoe.log'
 pickleFilenameDefault = ".ticTactoeSave.pl"
+createLogFileDefault = True
 
 class TicTacToe(QMainWindow) :
     """A game of Craps."""
@@ -68,9 +69,6 @@ class TicTacToe(QMainWindow) :
         self.winsLabel.setText(str("%i" % self.wins))
         self.lossesLabel.setText(str("%i" % self.losses))
         self.bankValue.setText(str("%i" % self.currentBank))
-
-
-
 
     def restoreGame(self):
         if self.appSettings.contains("ticTactoeSave"):
@@ -203,6 +201,7 @@ if __name__ == "__main__":
     if appSettings.contains('createLogFile'):
         createLogFile = appSettings.value('createLogFile')
     else:
+        createLogFile = createLogFileDefault
         logFilename = logFilenameDefault
         appSettings.setValue('logFile', logFilename)
     if createLogFile:
