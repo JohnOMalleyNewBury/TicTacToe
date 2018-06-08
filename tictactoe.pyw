@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
 import sys
+from sys import path
+import sys
+from logging import basicConfig, getLogger, DEBUG, INFO, CRITICAL
+from pickle import dump, load
+from os import path
+from PyQt5.QtCore import pyqtSlot, QSettings, Qt, QTimer, QCoreApplication
+from PyQt5 import QtGui, uic
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QMessageBox
 # import tictactoeResources_rc
 from time import sleep
 from PyQt5.QtCore import pyqtSlot
@@ -16,6 +24,16 @@ class TicTacToe(QMainWindow) :
 
         super().__init__(parent)
         uic.loadUi("tictactoe.ui", self)
+
+        self.logger = getLogger("John.craps")
+        self.appSettings = QSettings()
+        self.quitCounter = 0
+
+        uic.loadUi("settings.ui", self)
+
+        self.pickFilename = "ticTactoeSave"
+
+        self.restoreSetting()
 
         self.wins = 0
         self.losses = 0
@@ -34,7 +52,44 @@ class TicTacToe(QMainWindow) :
         self.square7.clicked.connect(lambda: self.buttonClickedHandler(7))
         self.square8.clicked.connect(lambda: self.buttonClickedHandler(8))
 
+    def updateUI(self):
+        if self.createLogFile:
+            self.logger.info("Die1: %i, Die2: %i" % (self.die1.getValue(), self.die2.getValue()))
+        self.bidSpinBox.setRange(self.minimumBet, self.maximumBet)
+        self.bidSpinBox.setSingleStep(5)
+        self.die1View.setPixmap(QtGui.QPixmap(":/" + str(self.die1.getValue())))
+        self.die2View.setPixmap(QtGui.QPixmap(":/" + str(self.die2.getValue())))
+        if self.firstRoll:
+            self.rollingForLabel.setText("")
+        else:
+            self.rollingForLabel.setText(str("%i" % self.firstRollValue))
+        self.resultsLabel.setText(self.results)
+        self.rollButton.setText(self.buttonText)
+        self.winsLabel.setText(str("%i" % self.wins))
+        self.lossesLabel.setText(str("%i" % self.losses))
+        self.bankValue.setText(str("%i" % self.currentBank))
 
+
+
+
+    def restoreGame(self):
+        if self.appSettings.contains("ticTactoeSave"):
+            self.appSettings.value("ticTactoeSave", type=str)
+            with open(path.join(path.dirname(path.realpath(__file__)),
+                                self.appSettings.value('pickleFilename', type=str)), 'rb') as pickleFile:
+                return load(pickleFile)
+        else:
+            self.logger.critical("No pickle Filename")
+
+    def saveGame(self):
+        self.logger.debug("Saving game")
+        saveItems = (self.playerMark, self.gameInProgress, self.gameBoard, self.wins, self.losses)
+        if self.appSettings.contains('pickleFilename'):
+            with open(path.join(path.dirname(path.realpath(__file__)),
+                                self.appSettings.value('pickleFilename', type=str)), 'wb') as pickleFile:
+                dump(saveItems, pickleFile)
+        else:
+            self.logger.critical("No pickle Filename")
 
     def __str__( self ):
         """String representation for Dice.
@@ -86,6 +141,28 @@ class TicTacToe(QMainWindow) :
                 self.gameInProgress = False
             self.updateUI()
             return
+        @pyqtSlot()  # Player asked to quit the game.
+        def closeEvent(self, event):
+            self.logger.debug("Closing app event")
+            if self.quitCounter == 0:
+                self.quitCounter += 1
+                quitMessage = "Are you sure you want to quit?"
+                reply = QMessageBox.question(self, 'Message', quitMessage, QMessageBox.Yes, QMessageBox.No)
+
+                if reply == QMessageBox.Yes:
+                    self.saveGame()
+                    event.accept()
+                else:
+                    event.ignore()
+                return super().closeEvent(event)
+        def restartGame(self):
+            self.logger.debug("Restarting game")
+            self.results = ""
+            self.playerLost = False
+            self.wins = 0
+            self.losses = 0
+            self.gameBoard.isEmpty
+            self.gameInprogress = True
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -93,19 +170,56 @@ if __name__ == "__main__":
     tictactoeApp.updateUI()
     tictactoeApp.show()
     sys.exit(app.exec_())
-def restarButtonClickedHandler(self, gameInProgress):
-    self.gameInProgress = True
-    self.gameBoard.isEmpty
+    QCoreApplication.setOrganizationName("OMALLEY Software");
+    QCoreApplication.setOrganizationDomain("omalleysoftware.com");
+    QCoreApplication.setApplicationName("TicTacToe");
+    appSettings = QSettings()
+    if appSettings.contains('createLogFile'):
+        createLogFile = appSettings.value('createLogFile')
+    else:
+        logFilename = logFilenameDefault
+        appSettings.setValue('logFile', logFilename)
+    if createLogFile:
+        startingFolderName = path.dirname(path.realpath(__file__))
+        if appSettings.contains('logFile'):
+            logFilename = appSettings.value('logFile', type=str)
+        else:
+            logFilename = logFilenameDefault
+            appSettings.setValue('logFile', logFilename)
+        basicConfig(filename=path.join(startingFolderName, logFilename), level=INFO,
+                    format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s')
+class PreferencesDialog(QDialog):
+    def __init__(self, parent = TicTacToe):
+        super(PreferencesDialog, self).__init__()
 
-def logging (self):
-    self.wins.settext
-    self.losses
-    self.gameboard.getmark
-def resultCounter(self,wins,losses):
-    self.wins
-    self.losses
-    if wins +1 :
-        settext.wins
+        uic.loadUi('preferencesDialog.ui', self)
+        self.logger = getLogger("Fireheart.craps")
+
+        self.appSettings = QSettings()
+        if self.appSettings.contains('logFile'):
+            self.logFilename = self.appSettings.value('logFile', type=str)
+        else:
+            self.logFilename = "logFilenameDefault"
+            self.appSettings.setValue('logFile', self.logFilename )
+
+        if self.appSettings.contains('createLogFile'):
+            self.createLogFile = self.appSettings.value('createLogFile')
+        else:
+            self.createLogFile = "logFilenameDefault"
+            self.appSettings.setValue('createLogFile', self.createLogFile )
+
+        self.buttonBox.rejected.connect(self.cancelClickedHandler)
+        self.buttonBox.accepted.connect(self.okayClickedHandler)
+        self.startingBankValue.editingFinished.connect(self.startingBankValueChanged)
+        self.maximumBetValue.editingFinished.connect(self.maximumBetValueChanged)
+        self.minimumBetValue.editingFinished.connect(self.minimumBetValueChanged)
+        self.createLogfileCheckBox.stateChanged.connect(self.createLogFileChanged)
+
+        self.updateUI()
+
+
+
+
 
 
 
