@@ -42,30 +42,56 @@
     <string>startiing mark</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="createLogfileCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>90</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>80</y>
-     <width>55</width>
+     <y>90</y>
+     <width>91</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>Create Logfile</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QRadioButton" name="playerMarkXradioButton">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>190</x>
      <y>30</y>
-     <width>101</width>
-     <height>16</height>
+     <width>95</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>set this to X or O</string>
+    <string>X</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="playerMarkOradioButton">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>60</y>
+     <width>95</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>O</string>
    </property>
   </widget>
  </widget>

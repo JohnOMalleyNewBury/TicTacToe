@@ -19,7 +19,7 @@ from gameObjects import *
 logFilenameDefault = 'tictactoe.log'
 pickleFilenameDefault = ".ticTactoeSave.pl"
 createLogFileDefault = True
-
+playerMarkDefault = "X"
 class TicTacToe(QMainWindow) :
     """A game of Craps."""
 
@@ -42,6 +42,8 @@ class TicTacToe(QMainWindow) :
         self.playerMark = "X"
         self.gameInProgress = True
 
+
+
         self.gameBoard = Board()
 
         self.square0.clicked.connect(lambda: self.buttonClickedHandler(0))
@@ -54,50 +56,27 @@ class TicTacToe(QMainWindow) :
         self.square7.clicked.connect(lambda: self.buttonClickedHandler(7))
         self.square8.clicked.connect(lambda: self.buttonClickedHandler(8))
 
+        self.restartButton.clicked.connect(self.restartGame)
+        self.settingsButton.clicked.connect(self.settingsButtonClickedHandler)
+
+        if path.exists(self.pickleFilename):
+            self.playerMark, self.gameInProgress, self.gameBoard, self.wins, self.losses = self.restoreGame()
+        else:
+            self.restartGame()
+
+        self.updateUI()
+
+    def restartGame(self):
+        self.wins = 0
+        self.losses = 0
+        self.playerMark = self.startingMark
+        self.gameInProgress = True
+        self.gameBoard = Board()
+        self.updateUI()
+
     def updateUI(self):
-        if self.createLogFile:
-            self.logger.info("Die1: %i, Die2: %i" % (self.die1.getValue(), self.die2.getValue()))
-        self.bidSpinBox.setRange(self.minimumBet, self.maximumBet)
-        self.bidSpinBox.setSingleStep(5)
-        self.die1View.setPixmap(QtGui.QPixmap(":/" + str(self.die1.getValue())))
-        self.die2View.setPixmap(QtGui.QPixmap(":/" + str(self.die2.getValue())))
-        if self.firstRoll:
-            self.rollingForLabel.setText("")
-        else:
-            self.rollingForLabel.setText(str("%i" % self.firstRollValue))
-        self.rollButton.setText(self.buttonText)
-        self.winsLabel.setText(str("%i" % self.wins))
-        self.lossesLabel.setText(str("%i" % self.losses))
-        self.bankValue.setText(str("%i" % self.currentBank))
-
-    def restoreGame(self):
-        if self.appSettings.contains("ticTactoeSave"):
-            self.appSettings.value("ticTactoeSave", type=str)
-            with open(path.join(path.dirname(path.realpath(__file__)),
-                                self.appSettings.value('pickleFilename', type=str)), 'rb') as pickleFile:
-                return load(pickleFile)
-        else:
-            self.logger.critical("No pickle Filename")
-
-    def saveGame(self):
-        self.logger.debug("Saving game")
-        saveItems = (self.playerMark, self.gameInProgress, self.gameBoard, self.wins, self.losses)
-        if self.appSettings.contains('pickleFilename'):
-            with open(path.join(path.dirname(path.realpath(__file__)),
-                                self.appSettings.value('pickleFilename', type=str)), 'wb') as pickleFile:
-                dump(saveItems, pickleFile)
-        else:
-            self.logger.critical("No pickle Filename")
-
-    def __str__( self ):
-        """String representation for Dice.
-        """
-        return ""
-
-    def restoreSettings(self):
-        return
-
-    def updateUI ( self ):
+        self.winsLabel.setText(str(self.wins))
+        self.lossesLabel.setText(str(self.losses))
         self.square0.setText(self.gameBoard.getMark(0))
         self.square1.setText(self.gameBoard.getMark(1))
         self.square2.setText(self.gameBoard.getMark(2))
@@ -110,9 +89,67 @@ class TicTacToe(QMainWindow) :
 
         # Add your code here to update the GUI view so it matches the game state.
 
+    def restoreGame(self):
+        if self.appSettings.contains("ticTactoeSave"):
+            pickleFilename = self.appSettings.value("ticTactoeSave", type=str)
+        else:
+            self.logger.critical("No pickle Filename")
+            pickleFilename = pickleFilenameDefault
+
+        with open(path.join(path.dirname(path.realpath(__file__)), pickleFilename), 'rb') as pickleFile:
+                return load(pickleFile)
+
+    def saveGame(self):
+        self.logger.debug("Saving game")
+        saveItems = (self.playerMark, self.gameInProgress, self.gameBoard, self.wins, self.losses)
+        if self.appSettings.contains('pickleFilename'):
+            with open(path.join(path.dirname(path.realpath(__file__)), self.appSettings.value('pickleFilename', type=str)), 'wb') as pickleFile:
+                dump(saveItems, pickleFile)
+        else:
+            self.logger.critical("No pickle Filename")
+
+    def __str__( self ):
+        """String representation for Dice.
+        """
+        return ""
+
+    def restoreSettings(self):
+        self.logger.debug("Starting restoreSettings")
+        # Restore settings values, write defaults to any that don't already exist.
+        if self.appSettings.contains('createLogFile'):
+            self.createLogFile = self.appSettings.value('createLogFile')
+        else:
+            self.createLogFile = logFilenameDefault
+            self.appSettings.setValue('createLogFile', self.createLogFile )
+
+        if self.appSettings.contains('logFile'):
+            self.logFilename = self.appSettings.value('logFile', type=str)
+        else:
+            self.logFilename = logFilenameDefault
+            self.appSettings.setValue('logFile', self.logFilename )
+
+        if self.appSettings.contains('pickleFilename'):
+            self.pickleFilename = self.appSettings.value('pickleFilename', type=str)
+        else:
+            self.pickleFilename = pickleFilenameDefault
+            self.appSettings.setValue('pickleFilename', self.pickleFilename)
+
 		# Player asked for another roll of the dice.
 
-        # Play the first roll
+    @pyqtSlot()  # Player asked to quit the game.
+    def closeEvent(self, event):
+        self.logger.debug("Closing app event")
+        if self.quitCounter == 0:
+            self.quitCounter += 1
+            quitMessage = "Are you sure you want to quit?"
+            reply = QMessageBox.question(self, 'Message', quitMessage, QMessageBox.Yes, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                self.saveGame()
+                event.accept()
+            else:
+                event.ignore()
+            return super().closeEvent(event)
 
     def buttonClickedHandler(self, buttonValue):
         if self.gameInProgress:
@@ -141,20 +178,7 @@ class TicTacToe(QMainWindow) :
                 self.gameInProgress = False
             self.updateUI()
             return
-        @pyqtSlot()  # Player asked to quit the game.
-        def closeEvent(self, event):
-            self.logger.debug("Closing app event")
-            if self.quitCounter == 0:
-                self.quitCounter += 1
-                quitMessage = "Are you sure you want to quit?"
-                reply = QMessageBox.question(self, 'Message', quitMessage, QMessageBox.Yes, QMessageBox.No)
 
-                if reply == QMessageBox.Yes:
-                    self.saveGame()
-                    event.accept()
-                else:
-                    event.ignore()
-                return super().closeEvent(event)
         def restartGame(self):
             self.logger.debug("Restarting game")
             self.results = ""
@@ -164,14 +188,32 @@ class TicTacToe(QMainWindow) :
             self.gameBoard.isEmpty
             self.gameInprogress = True
 
+    def settingsButtonClickedHandler(self):
+        if self.createLogFile:
+            self.logger.info("Setting preferences")
+        preferencesDialog = PreferencesDialog(QDialog)
+        preferencesDialog.show()
+        preferencesDialog.exec_()
+        self.restoreSettings()  # 'Restore' settings that were changed in the dialog window.
+        self.updateUI()
+        self.logger.debug("Preferences button clicked")
+
+
 class PreferencesDialog(QDialog):
     def __init__(self, parent = TicTacToe):
         super(PreferencesDialog, self).__init__()
 
         uic.loadUi('settings.ui', self)
-        self.logger = getLogger("Fireheart.craps")
+        self.logger = getLogger("John.craps")
 
         self.appSettings = QSettings()
+        if self.appSettings.contains('playerMark'):
+            self.playerMark = self.appSettings.value('playerMark', type=str)
+        else:
+            self.playerMark = playerMarkDefault
+            self.appSettings.setValue('playerMark', self.playerMark)
+
+
         if self.appSettings.contains('logFile'):
             self.logFilename = self.appSettings.value('logFile', type=str)
         else:
@@ -186,12 +228,52 @@ class PreferencesDialog(QDialog):
 
         self.buttonBox.rejected.connect(self.cancelClickedHandler)
         self.buttonBox.accepted.connect(self.okayClickedHandler)
-        self.startingBankValue.editingFinished.connect(self.startingBankValueChanged)
-        self.maximumBetValue.editingFinished.connect(self.maximumBetValueChanged)
-        self.minimumBetValue.editingFinished.connect(self.minimumBetValueChanged)
         self.createLogfileCheckBox.stateChanged.connect(self.createLogFileChanged)
 
         self.updateUI()
+
+
+    def okayClickedHandler(self):
+        self.preferencesGroup = (('playerMark', self.playerMark), \
+                                 ('logFile', self.logFilename), \
+                                 ('createLogFile', self.createLogFile), \
+                                 )
+        # Write settings values.
+        for setting, variableName in self.preferencesGroup:
+            # if self.appSettings.contains(setting):
+            self.appSettings.setValue(setting, variableName)
+
+        self.close()
+
+    def cancelClickedHandler(self):
+        self.close()
+
+        self.updateUI()
+
+    def createLogFileChanged(self):
+        self.createLogFile = self.createLogfileCheckBox.isChecked()
+
+    def updateUI(self):
+        if self.createLogFile:
+            self.createLogfileCheckBox.setCheckState(Qt.Checked)
+        else:
+            self.createLogfileCheckBox.setCheckState(Qt.Unchecked)
+    def radioButtonXAcceptedHandler(self):
+        self.playerMarkXradioButton.pressed.connect
+        self.playerMark.setText("X")
+        print(self.playerMark)
+    def radioButtonXRejectHandler(self):
+        self.playerMarkYradioButton.pressed.connect
+        print("the mark has not changed")
+
+    def radioButtonOAcceptedHandler(self):
+        self.playerMarkXradioButton.pressed.connect
+        self.playerMark.setText("Y")
+        print(self.playerMark)
+    def radioButtonORejectHandler(self):
+        self.playerMarkYradioButton.pressed.connect
+        print("the mark has not changed")
+
 
 if __name__ == "__main__":
     QCoreApplication.setOrganizationName("OMALLEY Software");
